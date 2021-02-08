@@ -4,14 +4,13 @@ title: "Craig Kopulsky"
 image: "craig.png"
 links:
   - label: LinkedIn
-    url: "https://linkedin.com/"
-  - label: Twitter
-    url: "https://twitter.com/"
+    url: "https://linkedin.com/in/craig-kopulsky-3915132a/"
   - label: GitHub
-    url: "https://github.com/"
+    url: "https://github.com/craigkopulsky"
   - label: Email
-    url: "mailto:email@email.com"
+    url: "mailto:ckopulsky@bren.ucsb.edu"
 output:
   postcards::jolla
 ---
  
+I am graduate student in the Master of Environmental Science and Management program at the Bren School of Environmental Science at UC Santa Barbara. I am interested in waste management, remediation, circular economics and systems, and agriculture.
