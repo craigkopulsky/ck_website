@@ -1,5 +1,6 @@
 name: "."
-title: "mfeo"
+title: "Craig's Place"
+theme: theme.css
 description: |
   mfeo
 output_dir: "docs"
