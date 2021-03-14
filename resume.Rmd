@@ -1,0 +1,23 @@
+---
+title: "My Resume - September 2020"
+author:
+  - name: Craig Kopulsky 
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(here)
+```
+
+This is my resume from September 2020. While this is extremely out of date, I am posting it here for now for the purposes of this assignment. I am planning to update it within the next couple weeks, and I will post the up-to-date resume to my website when it is ready. 
+
+View my resume here:
+
+[Resume - Craig Kopulsky - September 2020](./Resume Craig Kopulsky 9-20.pdf)
+
+
+
+
+

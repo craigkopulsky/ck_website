@@ -1,0 +1,106 @@
+---
+title: "Cetacean Density off the Coast of California"
+description: |
+  This was completed as part of an assignment for Allison Horst's ESM 244 course.
+author:
+  - name: Craig Kopulsky
+    url: {}
+date: 03-14-2021
+output:
+  distill::distill_article:
+    self_contained: false
+    code_folding: hide
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(raster) ### NOTE: attaching this BEFORE tidyverse
+library(tidyverse)
+library(janitor)
+library(here)
+library(sf)
+library(fasterize)
+library(rnaturalearth)
+```
+
+**Introduction:**
+
+This report analyzes spatial data for the probability of occurrence of 36 different cetacean species off the coast of California. A probability of .6 and above is used as a threshold to determine species presence at any point on the map for each of these species.
+
+
+```{r, message=FALSE, warning=FALSE}
+# reading in cetacean raster data and stacking data into one data frame
+cetaceans_file <- list.files(path = here('_posts/2021-03-14-cetacean-density-off-the-coast-of-california/data/ca_cetaceans'), full.names = TRUE, pattern = ".tif")
+
+ca_cetaceans <- stack(cetaceans_file)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# creating a function to set the threshold for a cetacean species to be counted as present in a given location at .6 and above
+is_cetacean_pres <- function(x, thresh = .6) {
+  y <- ifelse(x >= thresh, 1, 0)
+  return(y)
+}
+
+# using the above function on the ca_cetaceans dataset to convert cetacean probabilities at each point to 1 for present and 0 for not present
+cetacean_pres <- calc(ca_cetaceans, fun = is_cetacean_pres)
+#plot(cetacean_pres, col = c('red', 'green4'))
+```
+
+**Data Visualization:**
+
+
+```{r, message=FALSE, warning=FALSE}
+# turning cetacean_pres raster into a data frame
+cetacean_pres_df <- raster::rasterToPoints(cetacean_pres) %>%
+  as.data.frame()
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# creating a data frame that contains the sum of how many cetacean species were present at any given point in the raster
+cetacean_density <- calc(cetacean_pres, fun = sum, na.rm = TRUE)
+
+plot(cetacean_density)
+```
+
+**Figure 1:** Species richness raster map of 36 cetacean species off the coast of California. Color indicates the number of species present at a given point.
+
+```{r, fig.width = 10, fig.height= 10, message=FALSE, warning=FALSE, results='hide'}
+# downloading shapefiles of north america
+coast <- ne_download(scale = 110, type = 'land', category = 'physical', returnclass = "sf")
+states <- ne_download(scale = 110, type = 'states', category = 'cultural', returnclass = "sf")
+
+# filtering shape file for california
+ca <- states %>% 
+  filter(name == "California")
+
+# turning raster cetacean_density into a data frame
+cetacean_density_df <- raster::rasterToPoints(cetacean_density) %>%
+  as.data.frame()
+
+#creating static map using density data frame and overlaying north america and california shapes
+ggplot() +
+  geom_raster(data = cetacean_density_df, aes(x = x, y = y, fill = layer)) +
+  scale_fill_distiller(type = "seq", palette = "BuPu", aesthetics = "fill", direction = 1) +
+  geom_sf(data = coast, fill = "burlywood4") +
+  geom_sf(data = ca, fill = "burlywood4") +
+  coord_sf(xlim = c(-125, -115), ylim = c(32,38), expand = 0) +
+  labs(x = "", y = "", fill = "Cetacean Richness")
+  
+```  
+
+**Figure 2:** Static map depicting species precense for 36 cetacean species off the coast of California. Color indicates the number of species present at a given point.
+
+
+Citation:
+
+Kaschner, K., Rius-Barile, J., Kesner-Reyes, K., Garilao, C., Kullander, S., Rees, T., & Froese, R. (2016). AquaMaps: Predicted range maps for aquatic species. www.aquamaps.org
+
+
+
+
+
+

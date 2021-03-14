@@ -1,0 +1,28 @@
+---
+title: "Digestics Eco-E Project Proposal"
+description: |
+  Eco-E Project Proposal Submission for the MESM 2022 class at the Bren School of Environmental Science & Management at UC Santa Barbara - February 2021
+author:
+  - name: Craig Kopulsky
+    url: {}
+date: 03-14-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(here)
+```
+
+This is a proposal I wrote and submitted in February of 2021 for consideration as a graduate student project at the Bren School. The proposal was accepted by the Eco-Entrepreneurship committee. However, I will not be working on this project as a graduate student project.
+
+The proposal focuses on the business and environmental need for financing of small-scale, modular anaerobic digester systems in the dairy industry.
+
+View the proposal here:
+
+[Digestics Eco-E Project Proposal](./Digestics Eco-E Project Proposal.pdf)
+
+

@@ -1,0 +1,129 @@
+---
+title: "PCA Analaysis of Swiss Provinces Data from 1888"
+description: |
+  This was completed as part of an assignment for Allison Horst's ESM 244 course.
+author:
+  - name: Craig Kopulsky
+    url: {}
+date: 03-14-2021
+output:
+  distill::distill_article:
+    self_contained: false
+    code_folding: hide
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(rattle.data)
+library(ggfortify)
+library(kableExtra)
+```
+
+# Introduction
+
+This report contains a PCA analysis of a data set of fertility measurements and socio-economic indicators for all 47 French-speaking Swiss provinces around the year 1888. We will use a PCA plot to explore the variables in the data set and how they are correlated to each other. Each variable in the data set is included as a percent from 0 to 100. The following variables included in the data set will be explored:
+
+Fertility - %, a common fertility measure
+Agriculture - % of males involved in agriculture as an occupation
+Examination - % draftees receiving the highest mark on the army examination
+Education - % education beyond primary school for draftees
+Catholic - % Catholic, as oppose to protestant
+Infant Mortality - % live births who live less than 1 year
+
+### Data Citation
+Project “16P5”, pages 549–551 in
+
+Mosteller, F. and Tukey, J. W. (1977) Data Analysis and Regression: A Second Course in Statistics. Addison-Wesley, Reading Mass.
+
+indicating their source as “Data used by permission of Franice van de Walle. Office of Population Research, Princeton University, 1976. Unpublished data assembled under NICHD contract number No 1-HD-O-2077.” 
+
+
+
+
+
+# Data Wrangling
+
+```{r, warning=FALSE, message=FALSE}
+swiss_data <- swiss %>% # creating data set swiss_data with 1888 swiss province fertility measurements and socio-economic indicators
+  clean_names() %>% # changing variables to lower case snake case
+  tibble::rownames_to_column("Province") %>% # changing province row names to column, naming column "Province" so it can be used in a reference table
+  tibble::rownames_to_column("Reference") # changing row names, which are now numbers, to column, naming column "Reference" so it can be used in a referance table
+```
+
+
+# Province List
+
+The following numbers identify each of the provices in the PCA plots
+
+```{r, warning=FALSE, message=FALSE}
+swiss_province_list <- swiss_data %>% # creating data set swiss_province_list to be used for a reference list of swiss provinces and their representative numbers on the PCA plot
+  select(Reference, Province) # selecting variables Reference and Province to be included in reference table
+
+swiss_province_list_table <- swiss_province_list %>% # creating a reference table
+  kable() %>% 
+  kable_styling(full_width = FALSE, "hover") # using kable styling to finalize reference table
+
+swiss_province_list_table # showing reference table
+```
+
+# PCA Analysis
+
+
+```{r, warning=FALSE, message=FALSE}
+swiss_pca <- swiss_data %>% # creating data set for pca plot
+  select(fertility, agriculture, examination, education, catholic, infant_mortality) %>% # selecting continuous variables from data set for including in pca analysis
+  prcomp() # running PCA test
+
+# not including scale(), since all of the variables are percentages. including scale() does not effectively capture the lack of variance in the infant_mortality variable
+
+# swiss_pca$rotation # running analysis to see correlations between each variable in the pca test
+
+swiss_complete <- swiss_data # creating a data set to be used to pull labels into PCA plot
+
+autoplot(swiss_pca, # creating pca plot, using swiss_pca data
+         data = swiss_complete, # adding swiss_complete to add provicinces and allow for labels
+         loadings = TRUE, # including eigenvectors
+         loadings.label = TRUE, # including variable labels on eigenvectors
+         loadings.label.repel = TRUE, # Making sure variable labels do not overlap
+         label.size = 3, # setting province label size
+         label = TRUE, # including provice labels
+         label.repel = TRUE) + # repelling province labels from point markings and other labels
+  theme_minimal() # setting theme minimal
+```
+
+**Figure 1** PCA plot for 
+
+The PCA plot including all variables from the data set captures 92.72% of the variance of the data set with PC1 and PC2. This is a significant amount of the total variance, so the PCA plot does give us a reasonable idea of the relationship between the variables and the provinces. However, infant mortality has such a small impact on variance that it is hard to visualize the arrow for it, which is essentially just on the origin of the PCA plot. We will remove this variable to more clearly see the relationship between the other variables.
+
+
+```{r, warning=FALSE, message=FALSE}
+swiss_pca <- swiss_data %>% # creating data set for pca plot, running same code as last plot except for the removal of the infant_mortality variable
+  select(fertility, agriculture, examination, education, catholic) %>% # selecting continuous variables from data set for including in pca analysis
+  prcomp() # running PCA test
+
+# not including scale(), since all of the variables are percentages. including scale() does not effectively capture the lack of variance in the infant_mortality variable
+
+# swiss_pca$rotation # running analysis to see correlations between each variable in the pca test
+
+swiss_complete <- swiss_data # creating a data set to be used to pull labels into PCA plot
+
+autoplot(swiss_pca, # creating pca plot, using swiss_pca data
+         data = swiss_complete, # adding swiss_complete to add provicinces and allow for labels
+         loadings = TRUE, # including eigenvectors
+         loadings.label = TRUE, # including variable labels on eigenvectors
+         loadings.label.repel = TRUE, # Making sure variable labels do not overlap
+         label.size = 3, # setting province label size
+         label = TRUE, # including provice labels
+         label.repel = TRUE) + # repelling province labels from point markings and other labels
+  theme_minimal() # setting theme minimal
+```
+
+**Figure 2** Final PCA Plot
+
+With the infant mortality variable removed, PC1 and PC2 of the biplot together account for about 93% of the variance in the data. The Catholic variable accounts for the most variance of all of the variables by far. Provinces are very polarized on this variable. They are likely to either have a high or low proportion of Catholics in the population. There are a few provinces that are somewhere in the middle. Agriculture also accounts for a relatively large amount of the variance in the data set. These two variables have a very small amount of positive correlation. Agriculture and education are strongly negatively correlated. Levels of Catholicism and fertility are positively correlated which makes intuitive sense, as larger family size is known to be a hallmark of Catholic culture  in general. Education and examination are also positively correlated, which makes sense as increased levels of education for draftees would likely lead to higher examination scores for draftees.
+
+

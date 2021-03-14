@@ -1,7 +1,7 @@
 ---
 title: "California Oil Spills - 2008"
 description: |
-  A spatial exploration of California oil spill data from 2008.
+  This was completed as part of an assignment for Allison Horst's ESM 244 course.
 author:
   - name: Craig Kopulsky
     url: {}
@@ -22,6 +22,7 @@ library(tmap)
 library(gstat)
 library(stars)
 library(ggiraph)
+
 ```
 
 ## Introduction
@@ -30,7 +31,7 @@ This analysis visualizes California oil spill data in 2008 from the California D
 
 ```{r, message=FALSE, warning=FALSE, results='hide', echo=TRUE}
 # Read in the oil spill data
-oil_spill_data <- read_sf(here("_posts/2021-02-21-california-oil-spills-2008/oil_spill_data"), layer = "Oil_Spill_Incident_Tracking_%5Bds394%5D") %>% 
+oil_spill_data <- st_read(here("_posts/2021-02-21-california-oil-spills-2008/oil_spill_data"), layer = "Oil_Spill_Incident_Tracking_%5Bds394%5D") %>% 
   clean_names()
 
 # Check the projection
@@ -104,10 +105,4 @@ ggplot(data = spill_count_by_county) +
 
 California Department of Fish and Game, Office of Spill Prevention and Response. "Oil Spill Incident Tracking [ds394]" [digital map]. "California State Geoportal". 2009-07-23
 . https://gis.data.ca.gov/datasets/7464e3d6f4924b50ad06e5a553d71086_0/data. (2021-02-20).
-
-
-Distill is a publication format for scientific and technical writing, native to the web.
-
-Learn more about using Distill at <https://rstudio.github.io/distill>.
-
 
